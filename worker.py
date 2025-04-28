@@ -1,7 +1,8 @@
-# Imports and settings
 import sys, time, json, os, csv, pandas as pd
 from pathlib import Path
 from datetime import datetime
+from selenium import webdriver
+from selenium.webdriver.common.by import By
 from worker_actions.actions import driver
 
 from worker_actions import select_something, open_website, click_something, E2W, E3W, return_header, return_row
