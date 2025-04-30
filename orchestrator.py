@@ -68,8 +68,9 @@ for state in states:
                     print(f"❌ Failed for {state} - {rto} - {year} - {product}")
                     print(e.output)
                     print(e.stderr)
-                    print("🛑 Stopping script due to error. Please fix the issue and rerun.")
-                    exit(1)
+                    with open("output/error_log.txt", "a") as log_file:
+                        log_file.write(f"{state},{rto},{year},{product}\n")
+                    continue 
 
     # After scraping fully done for this state
     print(f"✅ Scraping completed for {state.upper()}!")
@@ -93,3 +94,24 @@ execution_time = end_time - start_time
 minutes = int(execution_time // 60)
 seconds = execution_time % 60
 print(f"\n⏱️ Total Execution time: {minutes} minutes and {seconds:.2f} seconds")
+
+if os.path.exists("output/error_log.txt"):
+    print("\n🔁 Retrying failed jobs...\n")
+    with open("output/error_log.txt") as log_file:
+        failed_jobs = log_file.readlines()
+
+    os.remove("output/error_log.txt")
+
+    for line in failed_jobs:
+        state, rto, year, product = line.strip().split(",")
+        try:
+            result = subprocess.run(
+                ["python", worker_script, state, rto, year, product, trim],
+                check=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True
+            )
+            print(result.stdout)
+        except Exception as e:
+            print(f"❌ Retried and failed again: {state}-{rto}-{year}-{product}")
