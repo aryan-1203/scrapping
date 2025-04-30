@@ -60,15 +60,17 @@ three_wheeler_t = paths_json['three_wheeler_t']
 print(f"Product starting letter: {arg_holder[3][0]}")
 sys.stdout.flush()
 
-# Set up Downloads path and filenames
-download_dir = str(Path.home() / "Downloads")
-default_xlsx_path = os.path.join(download_dir, "reportTable.xlsx")
+# Set up project output path
+output_dir = Path("output")
+output_dir.mkdir(exist_ok=True)
+
+default_xlsx_path = output_dir / "reportTable.xlsx"
 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-xlsx_renamed_path = os.path.join(download_dir, f"{arg_holder[1]}_{timestamp}.xlsx")
+xlsx_renamed_path = output_dir / f"{arg_holder[1]}_{timestamp}.xlsx"
 
 # Output and temp paths
-temp_path = 'temp/reportTable.csv'
-output_file_path = f'output/{arg_holder[0]}.{arg_holder[1]}.{arg_holder[2]}.{arg_holder[3]}.csv'
+temp_path = output_dir / "reportTable.csv"
+output_file_path = output_dir / f"{arg_holder[0]}.{arg_holder[1]}.{arg_holder[2]}.{arg_holder[3]}.csv"
 
 # Product-specific UI handling
 def product_settings():
@@ -187,7 +189,8 @@ with open(temp_path, 'r') as data_file:
         writer.writerows(holder)
 
     # Also create corresponding Excel file
-    pd.DataFrame(holder[1:], columns=holder[0]).to_excel(output_file_path.replace('.csv', '.xlsx'), index=False)
+    pd.DataFrame(holder[1:], columns=holder[0]).to_excel(output_file_path.with_suffix('.xlsx'), index=False)
+
 
 print(f"✅ Saved processed CSV and Excel at: {output_file_path}")
 
