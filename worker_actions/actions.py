@@ -5,10 +5,16 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import ElementClickInterceptedException, StaleElementReferenceException
 from selenium.webdriver.common.action_chains import ActionChains
+from pathlib import Path
 import sys
 import time
 
 short_wait = 1
+
+# Set up project output folder as download directory
+project_root = Path(__file__).resolve().parent.parent
+output_dir = str(project_root / "output")
+Path(output_dir).mkdir(parents=True, exist_ok=True)
 
 # Set headless Chrome options
 options = Options()
@@ -17,6 +23,14 @@ options.add_argument('--disable-gpu')
 options.add_argument('--window-size=1920,1080')
 options.add_argument('--no-sandbox')
 options.add_argument('--disable-dev-shm-usage')
+
+prefs = {
+    "download.default_directory": output_dir,
+    "download.prompt_for_download": False,
+    "directory_upgrade": True,
+    "safebrowsing.enabled": True
+}
+options.add_experimental_option("prefs", prefs)
 
 # Create headless driver
 driver = webdriver.Chrome(options=options)
